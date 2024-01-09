@@ -19,12 +19,14 @@ services:
       - media:/app/media/
     depends_on: 
       - db
+    restart: unless-stopped
   frontend:
     image: d1g1tsdocker/kittygram_frontend
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
+    restart: unless-stopped
   gateway:
     image: d1g1tsdocker/kittygram_gateway
     env_file: .env
@@ -33,3 +35,4 @@ services:
       - media:/app/media/
     ports:
       - 9000:80
+    restart: unless-stopped
