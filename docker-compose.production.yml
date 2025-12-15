@@ -12,7 +12,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    image: d1g1tsdocker/kittygram_backend
+    image: d1g1tsdocker/furrymetrics_backend
     env_file: .env
     volumes:
       - static:/backend_static
@@ -21,14 +21,14 @@ services:
       - db
     restart: unless-stopped
   frontend:
-    image: d1g1tsdocker/kittygram_frontend
+    image: d1g1tsdocker/furrymetrics_frontend
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
     restart: unless-stopped
   gateway:
-    image: d1g1tsdocker/kittygram_gateway
+    image: d1g1tsdocker/furrymetrics_gateway
     env_file: .env
     volumes:
       - static:/static/
