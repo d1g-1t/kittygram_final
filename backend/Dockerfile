@@ -8,4 +8,6 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:9000", "kittygram_backend.wsgi"]
+RUN chmod +x wait-for-db.py
+
+CMD python wait-for-db.py && python manage.py migrate && gunicorn --bind 0.0.0.0:9000 furrymetrics_backend.wsgi

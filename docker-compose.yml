@@ -1,4 +1,4 @@
-version: '3'
+# version line removed – Docker Compose v2 is default
 
 volumes:
   pg_data:
@@ -8,28 +8,42 @@ volumes:
 services:
   db:
     image: postgres:alpine
-    env_file: .env
+    env_file: .env.example
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U furrymetrics_user -d furrymetrics"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   backend:
+    environment:
+      POSTGRES_DB: furrymetrics
+      POSTGRES_USER: furrymetrics_user
+      POSTGRES_PASSWORD: furrymetrics_password
+      DB_NAME: furrymetrics
+      DB_HOST: db
+      DB_PORT: "5432"
     build: ./backend/
-    env_file: .env
+    env_file: .env.example
     volumes:
       - static:/backend_static
       - media:/app/media/
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   frontend:
-    env_file: .env
     build: ./frontend/
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
   gateway:
     build: ./nginx/
-    env_file: .env
     ports:
-      - 9000:80
+      - 80:80
     volumes:
       - static:/static/
       - media:/app/media/
+    depends_on:
+      - backend
+      - frontend
